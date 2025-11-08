@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ FIFO caching.
 """
-from anyio import key
+
 from base_caching import BaseCaching
 
 
