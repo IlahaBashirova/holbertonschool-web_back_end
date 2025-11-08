@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """ BasicCache module
 """
-from anyio import key
-from .base_caching import BaseCaching
+from base_caching import BaseCaching
 
 class BasicCache(BaseCaching):
     """ BasicCache defines a basic caching system
