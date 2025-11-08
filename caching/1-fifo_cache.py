@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """ FIFO caching.
 """
-
 from base_caching import BaseCaching
 
 
 class FIFOCache(BaseCaching):
-    """ FIFOCache defines a caching system
-        that follows the FIFO algorithm
+    """ FIFOCache defines a caching system that follows the FIFO algorithm.
     """ 
     def __init__(self):
         """Initialize.
@@ -24,7 +22,7 @@ class FIFOCache(BaseCaching):
             return
         if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
             discarder_key, discarder_item = self.cache_data.popitem(last=False)
-            print(f"DISCARD: {discarder_key}")
+            print("DISCARD: {}".format(discarder_key))
         self.cache_data[key] = item
 
     def get(self, key):
