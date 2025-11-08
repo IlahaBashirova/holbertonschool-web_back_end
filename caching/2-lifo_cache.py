@@ -11,7 +11,7 @@ class LIFOCache(BaseCaching):
         """Initialize.
         """
         super().__init__()
-    
+
     def put(self, key, item):
         """Add an item to dictionary.
         """
