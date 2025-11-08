@@ -5,15 +5,15 @@ from anyio import key
 from base_caching import BaseCaching
 
 
-def __init__(self):
-    """Initialize
-    """
-    super().__init__()
-
 class FIFOCache(BaseCaching):
     """ FIFOCache defines a caching system
         that follows the FIFO algorithm
     """ 
+    def __init__(self):
+        """Initialize
+        """
+        super().__init__()
+
     def put(self, key, item):
         """Add an item in the cache.
         """
@@ -30,4 +30,3 @@ class FIFOCache(BaseCaching):
         if key is None or key not in self.cache_data:
             return None
         return self.cache_data.get(key)
-   
