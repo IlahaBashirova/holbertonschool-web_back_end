@@ -10,7 +10,7 @@ class FIFOCache(BaseCaching):
         that follows the FIFO algorithm
     """ 
     def __init__(self):
-        """Initialize
+        """Initialize.
         """
         super().__init__()
 
@@ -18,6 +18,9 @@ class FIFOCache(BaseCaching):
         """Add an item in the cache.
         """
         if key is None or item is None:
+            return
+        if key in self.cache_data:
+            self.cache_data[key] = item
             return
         if len(self.cache_data) >= BaseCaching.MAX_ITEMS:
             discarder_key, discarder_item = self.cache_data.popitem(last=False)
