@@ -38,8 +38,12 @@ class RedactingFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Filter values in the log record."""
-        msg = filter_datum(self.fields, self.REDACTION,
-                           record.getMessage(), self.SEPARATOR)
+        msg = filter_datum(
+            self.fields,
+            self.REDACTION,
+            record.getMessage(),
+            self.SEPARATOR
+        )
         record.msg = msg
         return super().format(record)
 
@@ -53,14 +57,13 @@ def get_logger() -> logging.Logger:
     handler = logging.StreamHandler()
     handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
 
-    # Avoid duplicate handlers if get_logger is called multiple times
     logger.handlers = []
     logger.addHandler(handler)
 
     return logger
 
 
-def get_db() -> MySQLConnection:
+def get_db() -> mysql.connector.connection.MySQLConnection:
     """Return a connector to the MySQL database."""
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
@@ -71,5 +74,5 @@ def get_db() -> MySQLConnection:
         user=username,
         password=password,
         host=host,
-        database=db_name,
+        database=db_name
     )
