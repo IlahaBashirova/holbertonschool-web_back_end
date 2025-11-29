@@ -57,6 +57,7 @@ def get_logger() -> logging.Logger:
     handler = logging.StreamHandler()
     handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
 
+    # Avoid duplicate handlers if get_logger is called multiple times
     logger.handlers = []
     logger.addHandler(handler)
 
@@ -76,3 +77,27 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
         host=host,
         database=db_name
     )
+
+
+def main() -> None:
+    """Obtain a DB connection and display filtered rows from users table."""
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+
+    # Column names in order returned by the query
+    fields = [desc[0] for desc in cursor.description]
+    logger = get_logger()
+
+    for row in cursor:
+        message = "; ".join(
+            f"{field}={value}" for field, value in zip(fields, row)
+        )
+        logger.info(message)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
