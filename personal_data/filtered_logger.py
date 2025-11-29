@@ -4,27 +4,32 @@
 import logging
 import os
 import re
-from typing import List
+from typing import List, Tuple
 
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
 
 
 # Fields from user_data.csv that are considered PII
-PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
-def filter_datum(fields: List[str],
-                 redaction: str,
-                 message: str,
-                 separator: str) -> str:
-    """Return message with values of specified fields redacted."""
-    pattern = "({})=[^{}]*".format("|".join(fields), separator)
-    return re.sub(pattern, r"\1={}".format(redaction), message)
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """Return the log message with specified fields redacted."""
+    pattern = (
+        rf"({'|'.join(map(re.escape, fields))})="
+        rf"[^{re.escape(separator)}]*"
+    )
+    return re.sub(
+        pattern,
+        lambda m: f"{m.group(1)}={redaction}",
+        message,
+    )
 
 
 class RedactingFormatter(logging.Formatter):
-    """Redacting Formatter class."""
+    """Logging Formatter that redacts PII fields from log records."""
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
@@ -33,17 +38,21 @@ class RedactingFormatter(logging.Formatter):
     def __init__(self, fields: List[str]) -> None:
         """Initialize the formatter with a list of fields to redact."""
         super().__init__(self.FORMAT)
-        self.fields = fields
+        self.fields: List[str] = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """Filter values in the log record."""
-        msg = super().format(record)
-        return filter_datum(self.fields, self.REDACTION,
-                            msg, self.SEPARATOR)
+        """Apply redaction to the log record and format it."""
+        record.msg = filter_datum(
+            self.fields,
+            self.REDACTION,
+            record.getMessage(),
+            self.SEPARATOR,
+        )
+        return super().format(record)
 
 
 def get_logger() -> logging.Logger:
-    """Return a configured logger for user data."""
+    """Create and configure a logger for user data."""
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -51,13 +60,15 @@ def get_logger() -> logging.Logger:
     handler = logging.StreamHandler()
     handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
 
-    logger.handlers = []
+    # Avoid duplicate handlers when tests import multiple times
+    logger.handlers.clear()
     logger.addHandler(handler)
+
     return logger
 
 
 def get_db() -> MySQLConnection:
-    """Return a connector to the MySQL database."""
+    """Return a connection to the MySQL database."""
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
@@ -69,29 +80,3 @@ def get_db() -> MySQLConnection:
         host=host,
         database=db_name,
     )
-
-
-def main() -> None:
-    """Obtain a DB connection and display filtered rows from users table."""
-    db = get_db()
-    cursor = db.cursor()
-    query = ("SELECT name, email, phone, ssn, password, ip, "
-             "last_login, user_agent FROM users;")
-    cursor.execute(query)
-
-    logger = get_logger()
-    fields = ("name", "email", "phone", "ssn",
-              "password", "ip", "last_login", "user_agent")
-
-    for row in cursor:
-        message = "; ".join(
-            "{}={}".format(field, value) for field, value in zip(fields, row)
-        )
-        logger.info(message)
-
-    cursor.close()
-    db.close()
-
-
-if __name__ == "__main__":
-    main()
