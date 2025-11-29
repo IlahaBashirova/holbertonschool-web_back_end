@@ -9,7 +9,11 @@ def filter_datum(fields: List[str],
                  redaction: str,
                  message: str,
                  separator: str) -> str:
-    """Return message with values of `fields` replaced by `redaction`."""
+    """Return message with values of specified fields redacted."""
     sep = re.escape(separator)
     pattern = f"({'|'.join(map(re.escape, fields))})=[^{sep}]*"
-    return re.sub(pattern, lambda match: f"{match.group(1)}={redaction}", message)
+
+    def repl(m):
+        return m.group(1) + "=" + redaction
+
+    return re.sub(pattern, repl, message)
