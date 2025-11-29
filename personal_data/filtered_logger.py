@@ -8,9 +8,7 @@ from typing import List
 
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Fields from user_data.csv that are considered PII
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
