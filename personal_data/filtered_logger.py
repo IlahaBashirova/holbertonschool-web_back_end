@@ -19,8 +19,14 @@ def filter_datum(fields: List[str],
                  message: str,
                  separator: str) -> str:
     """Return message with values of specified fields redacted."""
-    pattern = "(" + "|".join(fields) + ")=[^" + separator + "]*"
-    return re.sub(pattern, r"\1=" + redaction, message)
+    sep = re.escape(separator)
+    pattern = f"({'|'.join(map(re.escape, fields))})=[^{sep}]*"
+    return re.sub(
+        pattern,
+        lambda m: m.group(1) + '=' + redaction,
+        message,
+    )
+
 
 class RedactingFormatter(logging.Formatter):
     """Redacting Formatter class."""
