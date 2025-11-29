@@ -1,23 +1,16 @@
-#!/usr/bin/env python3
-"""Module for filtering and logging personal data safely."""
-
 import logging
-import os
-import re
 from typing import List
-
+import re
+import os
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
 
 
-# Fields from user_data.csv that are considered PII
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 
-def filter_datum(fields: List[str],
-                 redaction: str,
-                 message: str,
-                 separator: str) -> str:
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
     """Return message with values of specified fields redacted."""
     pattern = "(" + "|".join(fields) + ")=[^" + separator + "]*"
     return re.sub(pattern, r"\1=" + redaction, message)
@@ -30,7 +23,7 @@ class RedactingFormatter(logging.Formatter):
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
-    def __init__(self, fields: List[str]) -> None:
+    def __init__(self, fields: List[str]):
         """Initialize the formatter with a list of fields to redact."""
         super().__init__(self.FORMAT)
         self.fields = fields
@@ -48,14 +41,10 @@ def get_logger() -> logging.Logger:
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
-
     handler = logging.StreamHandler()
-    formatter = RedactingFormatter(list(PII_FIELDS))
-    handler.setFormatter(formatter)
-
+    handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
     logger.handlers = []
     logger.addHandler(handler)
-
     return logger
 
 
@@ -65,10 +54,8 @@ def get_db() -> MySQLConnection:
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME")
-
     return mysql.connector.connect(
         user=username,
         password=password,
         host=host,
-        database=db_name,
-    )
+        database=db_name)
