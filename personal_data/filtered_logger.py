@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Module for filtering and logging personal data safely."""
+"""Tools for filtering and logging personal data safely."""
 
 import logging
 import os
@@ -10,49 +10,58 @@ import mysql.connector
 from mysql.connector.connection import MySQLConnection
 
 
-# Fields from user_data.csv that are considered PII
 PII_FIELDS: Tuple[str, ...] = ("name", "email", "phone", "ssn", "password")
 
 
-def filter_datum(fields: List[str], redaction: str,
-                 message: str, separator: str) -> str:
-    """Return the log message with specified fields redacted."""
-    pattern = (
-        rf"({'|'.join(map(re.escape, fields))})="
-        rf"[^{re.escape(separator)}]*"
-    )
+def filter_datum(fields: List[str],
+                 redaction: str,
+                 message: str,
+                 separator: str) -> str:
+    """Replace the values of specified fields in a log message.
+
+    Each field is expected to appear as ``field=value`` and be separated by
+    ``separator``. The returned string is the same message where the values
+    of all fields present in ``fields`` are replaced by ``redaction``.
+    """
+    pattern = f"({'|'.join(fields)})=[^{separator}]*"
     return re.sub(
         pattern,
-        lambda m: f"{m.group(1)}={redaction}",
+        lambda match: f"{match.group(1)}={redaction}",
         message,
     )
 
 
 class RedactingFormatter(logging.Formatter):
-    """Logging Formatter that redacts PII fields from log records."""
+    """Logging Formatter that redacts sensitive fields in log records."""
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]) -> None:
-        """Initialize the formatter with a list of fields to redact."""
+        """Initialize the formatter with the list of fields to redact."""
         super().__init__(self.FORMAT)
-        self.fields: List[str] = fields
+        self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """Apply redaction to the log record and format it."""
-        record.msg = filter_datum(
+        """Format a log record with sensitive fields redacted."""
+        redacted = filter_datum(
             self.fields,
             self.REDACTION,
             record.getMessage(),
             self.SEPARATOR,
         )
+        record.msg = redacted
         return super().format(record)
 
 
 def get_logger() -> logging.Logger:
-    """Create and configure a logger for user data."""
+    """Create and configure a logger named ``user_data``.
+
+    The logger logs messages with level INFO or higher, does not propagate
+    to parent loggers, and has a single :class:`StreamHandler` using
+    :class:`RedactingFormatter` configured with :data:`PII_FIELDS`.
+    """
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     logger.propagate = False
@@ -60,15 +69,21 @@ def get_logger() -> logging.Logger:
     handler = logging.StreamHandler()
     handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
 
-    # Avoid duplicate handlers when tests import multiple times
-    logger.handlers.clear()
+    logger.handlers = []
     logger.addHandler(handler)
 
     return logger
 
 
 def get_db() -> MySQLConnection:
-    """Return a connection to the MySQL database."""
+    """Create a MySQL connection using credentials from environment vars.
+
+    Environment variables:
+        PERSONAL_DATA_DB_USERNAME: database user (default: "root")
+        PERSONAL_DATA_DB_PASSWORD: database password (default: "")
+        PERSONAL_DATA_DB_HOST: database host (default: "localhost")
+        PERSONAL_DATA_DB_NAME: database name (no default)
+    """
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
