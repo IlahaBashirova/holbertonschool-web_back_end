@@ -11,4 +11,3 @@ messages = [
 
 for message in messages:
     print(filter_datum(fields, 'xxx', message, ';'))
-    
