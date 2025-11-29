@@ -8,7 +8,9 @@ from typing import List
 
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
+from dotenv import load_dotenv
 
+load_dotenv()
 
 # Fields from user_data.csv that are considered PII
 PII_FIELDS = ("name", "email", "phone", "ssn", "password")
@@ -70,9 +72,9 @@ def get_logger() -> logging.Logger:
 
 def get_db() -> MySQLConnection:
     """Return a connector to the MySQL database."""
-    username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
-    password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
-    host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    username = os.getenv("PERSONAL_DATA_DB_USERNAME")
+    password = os.getenv("PERSONAL_DATA_DB_PASSWORD")
+    host = os.getenv("PERSONAL_DATA_DB_HOST")
     db_name = os.getenv("PERSONAL_DATA_DB_NAME")
 
     return mysql.connector.connect(
