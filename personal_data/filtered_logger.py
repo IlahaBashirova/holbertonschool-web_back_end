@@ -6,6 +6,10 @@ import re
 from typing import List
 
 
+# Fields from user_data.csv that are considered PII
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
 def filter_datum(fields: List[str],
                  redaction: str,
                  message: str,
@@ -34,3 +38,19 @@ class RedactingFormatter(logging.Formatter):
                            record.getMessage(), self.SEPARATOR)
         record.msg = msg
         return super().format(record)
+
+
+def get_logger() -> logging.Logger:
+    """Return a configured logger for user data."""
+    logger = logging.getLogger("user_data")
+    logger.setLevel(logging.INFO)
+    logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+
+    # Avoid adding multiple handlers if get_logger() is called more than once
+    logger.handlers = []
+    logger.addHandler(stream_handler)
+
+    return logger
