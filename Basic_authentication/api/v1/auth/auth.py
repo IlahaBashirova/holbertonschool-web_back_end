@@ -12,7 +12,10 @@ except ImportError:
 
 User = TypeVar('User')
 
-class  Auth:
+
+class Auth:
+
+
     """Authentication class to manage the API authentication.
     """
 
