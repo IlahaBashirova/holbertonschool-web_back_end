@@ -14,11 +14,8 @@ User = TypeVar('User')
 
 
 class Auth:
-
-
     """Authentication class to manage the API authentication.
     """
-
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
         Determine if a given path requires authentication.
