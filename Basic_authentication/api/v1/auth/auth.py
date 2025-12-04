@@ -25,7 +25,15 @@ class Auth:
             - always return False
         These arguments will be used in later tasks.
         """
-        return False
+        if path is None:
+            return True
+        if excluded_paths is None:
+            return True
+        if path in excluded_paths:
+            return False
+        if not path.endswith('/'):
+            path += '/'
+        return True
 
     def authorization_header(self, request=None) -> str:
         """Return the authorization header."""
