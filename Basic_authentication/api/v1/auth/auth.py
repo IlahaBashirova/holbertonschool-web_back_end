@@ -4,15 +4,15 @@
 from typing import List, TypeVar
 
 
-try :
+try:
     from flask import request
 except ImportError:
     request = None
 
 
-User= TypeVar('User')
+User = TypeVar('User')
 
-class Auth:
+class  Auth:
     """Authentication class to manage the API authentication.
     """
 
@@ -26,9 +26,9 @@ class Auth:
         These arguments will be used in later tasks.
         """
         return False
-    
 
-    def authorization_header(self, request=None) -> str:
+
+    def authorization_header(self, request = None) -> str:
         """
         Return the authorization header from a request.
 
@@ -39,7 +39,7 @@ class Auth:
         return None
     
 
-    def current_user(self, request=None) -> TypeVar('User'):
+    def current_user(self, request = None) -> TypeVar('User'):
         """
         Return the current user.
 
@@ -47,4 +47,3 @@ class Auth:
         This method will be implemented in later tasks.
         """
         return None
-    
