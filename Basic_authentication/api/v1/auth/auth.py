@@ -3,6 +3,13 @@
 from flask import request
 from typing import List, TypeVar
 
+
+try :
+    from flask import request
+except ImportError:
+    request = None
+
+
 User= TypeVar('User')
 
 class Auth:
