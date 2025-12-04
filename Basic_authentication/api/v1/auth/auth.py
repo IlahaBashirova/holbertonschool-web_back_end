@@ -31,10 +31,6 @@ class Auth:
     def authorization_header(self, request=None) -> str:
         """
         Return the authorization header from a request.
-
-        If request is None, return None.
-        If the header is not present, return None.
-        Otherwise, return the value of the header.
         """
         return None
 
@@ -42,8 +38,5 @@ class Auth:
     def current_user(self, request=None) -> TypeVar('User'):
         """
         Return the current user.
-
-        For now, return None.
-        This method will be implemented in later tasks.
         """
         return None
