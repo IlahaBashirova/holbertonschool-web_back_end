@@ -29,14 +29,10 @@ class Auth:
 
 
     def authorization_header(self, request=None) -> str:
-        """
-        Return the authorization header from a request.
-        """
+        """Return the authorization header."""
         return None
 
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """
-        Return the current user.
-        """
+        """Return the current user."""
         return None
