@@ -27,11 +27,9 @@ class Auth:
         """
         return False
 
-
     def authorization_header(self, request=None) -> str:
         """Return the authorization header."""
         return None
-
 
     def current_user(self, request=None) -> TypeVar('User'):
         """Return the current user."""
