@@ -27,6 +27,7 @@ if AUTH_TYPE == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 
+
 @app.before_request
 def before_request():
     """Filter each request before processing it"""
