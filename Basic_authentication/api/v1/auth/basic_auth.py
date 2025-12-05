@@ -2,6 +2,7 @@
 """BasicAuth module
 """
 
+from typing import TypeVar
 from api.v1.auth.auth import Auth
 
 
