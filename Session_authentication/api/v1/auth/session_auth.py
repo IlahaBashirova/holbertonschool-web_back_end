@@ -47,7 +47,8 @@ class SessionAuth(Auth):
             return None
         return User.get(user_id)
 
-    @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
+    @app_views.route(
+            '/auth_session/login', methods=['POST'], strict_slashes=False)
     def auth_session_login():
         """
         POST /api/v1/auth_session/login
