@@ -38,7 +38,7 @@ class SessionAuth(Auth):
             return None
 
         return User.get(user_id)
-    
+
     def destroy_session(self, request=None) -> bool:
         """Destroy the session based on the cookie value from the request"""
         if request is None:
