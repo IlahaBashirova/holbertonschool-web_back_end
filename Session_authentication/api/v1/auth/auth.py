@@ -2,7 +2,7 @@
 """Authentication module
 """
 from typing import List, TypeVar
-
+from os import getenv
 
 try:
     from flask import request
@@ -63,5 +63,8 @@ class Auth:
         """Return a cookie value from a request."""
         if request is None:
             return None
-        SESSION_NAME = self.session_cookie_name
-        return request.cookies.get(SESSION_NAME, None)
+
+        session_name = getenv("SESSION_NAME")
+        if session_name is None:
+            return None
+        return request.cookies.get(session_name)
