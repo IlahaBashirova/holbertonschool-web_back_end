@@ -18,33 +18,37 @@ def auth_session_login():
     Login using email + password, create a session,
     return the user JSON and set the session cookie.
     """
+    # 1) Get email
     email = request.form.get("email")
     if email is None or email == "":
         return jsonify({"error": "email missing"}), 400
 
+    # 2) Get password
     password = request.form.get("password")
     if password is None or password == "":
         return jsonify({"error": "password missing"}), 400
 
+    # 3) Find user by email
     users = User.search({"email": email})
     if not users:
         return jsonify({"error": "no user found for this email"}), 404
 
     user = users[0]
 
+    # 4) Check password
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
+    # 5) Create session (import here to avoid circular import)
     from api.v1.app import auth
 
     session_id = auth.create_session(user.id)
 
+    # 6) Build response with user JSON
     response = jsonify(user.to_json())
 
+    # 7) Set cookie with session id
     session_name = getenv("SESSION_NAME")
-    if session_name is None:
-        session_name = "_my_session_id"  # optional default
-
     response.set_cookie(session_name, session_id)
 
     return response
