@@ -8,6 +8,7 @@ from sqlalchemy import Column, Integer, String
 
 Base = declorative_base()
 
+
 class User(Base):
     """SQLalchemy for the `users` table."""
     __tablename__ = "users"
