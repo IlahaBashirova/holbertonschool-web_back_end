@@ -51,3 +51,13 @@ class DB:
         if user is None:
             raise NoResultFound()
         return user
+
+    def update_user(self, user_id, **kwargs) -> None:
+        """Update User instance matching given filters."""
+        user = self.find_user_by(id=user_id)
+        for key in kwargs.keys():
+            if not hasattr(User, key):
+                raise ValueError(f"Invalid key: {key}")
+        for key, value in kwargs:
+            setattr(user, key, value)
+        self._session.commit()
