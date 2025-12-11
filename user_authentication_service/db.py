@@ -52,7 +52,7 @@ class DB:
             raise NoResultFound()
         return user
 
-    def update_user(self, user_id, **kwargs) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Update User instance matching given filters."""
         user = self.find_user_by(id=user_id)
         for key in kwargs.keys():
