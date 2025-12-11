@@ -58,6 +58,6 @@ class DB:
         for key in kwargs.keys():
             if not hasattr(User, key):
                 raise ValueError(f"Invalid key: {key}")
-        for key, value in kwargs:
+        for key, value in kwargs.items():
             setattr(user, key, value)
         self._session.commit()
