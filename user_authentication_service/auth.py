@@ -8,6 +8,7 @@ from user import User
 from sqlalchemy.orm.exc import NoResultFound
 
 
+
 def _generate_uuid() -> str:
     """Generate a new UUID and return its string representation."""
     return str(uuid.uuid4())
@@ -38,7 +39,7 @@ class Auth:
             new_user = self._db.add_user(email, hashed_password)
             return new_user
         else:
-            raise ValueError("User {} already exists", format(email))
+            raise ValueError("User {} already exists". format(email))
 
     def valid_login(self, email: str, password: str) -> bool:
         """Check if a login password matches."""
