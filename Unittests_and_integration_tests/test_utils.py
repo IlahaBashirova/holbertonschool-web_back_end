@@ -52,12 +52,14 @@ class TestMemoize(unittest.TestCase):
 
     def test_memoize(self):
         class TestClass:
-            """test the class."""
+            """A helper class used to test memoization."""
             def a_method(self):
+                """Return a fixed number."""
                 return 42
 
             @memoize
             def a_property(self):
+                """Return the memoized value produced by a_method."""
                 return self.a_method()
 
         obj = TestClass()
