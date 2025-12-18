@@ -18,7 +18,7 @@ class TestAccessNestedMap(unittest.TestCase):
         ({"a": {"b": 2}}, ("a", "b"), 2),
     ])
     def test_access_nested_map(self, nested_map, path, expected):
-        """It should return the correct value from a nested map for a given path."""
+        """It should return the correct value."""
         self.assertEqual(access_nested_map(nested_map, path), expected)
 
     @parameterized.expand([
@@ -40,7 +40,7 @@ class TestGetJson(unittest.TestCase):
         ("http://holberton.io", {"payload": False}),
     ])
     def test_get_json(self, test_url, test_payload):
-        """It should return the expected JSON payload and call requests.get once."""
+        """It should return the expected JSON payload."""
         mock_response = Mock()
         mock_response.json.return_value = test_payload
 
