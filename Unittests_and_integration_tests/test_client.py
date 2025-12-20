@@ -77,33 +77,33 @@ class TestGithubOrgClient(unittest.TestCase):
             expected,
         )
 
-    @parameterized_class(TEST_PAYLOAD)
-    class TestIntegrationGithubOrgClient(unittest.TestCase):
-        """Integration tests for GithubOrgClient.public_repos."""
+@parameterized_class(TEST_PAYLOAD)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Integration tests for GithubOrgClient.public_repos."""
 
-        @classmethod
-        def setUpClass(cls):
-            """Start patcher for requests.get and return fixture payloads."""
-            cls.get_patcher = patch("requests.get")
-            cls.mock_get = cls.get_patcher.start()
+    @classmethod
+    def setUpClass(cls):
+        """Start patcher for requests.get and return fixture payloads."""
+        cls.get_patcher = patch("requests.get")
+        cls.mock_get = cls.get_patcher.start()
 
-            org_url = "https://api.github.com/orgs/google"
-            repos_url = cls.org_payload["repos_url"]
+        org_url = "https://api.github.com/orgs/google"
+        repos_url = cls.org_payload["repos_url"]
 
-            def side_effect(url, *args, **kwargs):
-                """Return correct mock response depending on URL."""
-                mock_response = Mock()
-                if url == org_url:
-                    mock_response.json.return_value = cls.org_payload
-                elif url == repos_url:
-                    mock_response.json.return_value = cls.repos_payload
-                else:
-                    mock_response.json.return_value = {}
-                return mock_response
+        def side_effect(url, *args, **kwargs):
+            """Return correct mock response depending on URL."""
+            mock_response = Mock()
+            if url == org_url:
+                mock_response.json.return_value = cls.org_payload
+            elif url == repos_url:
+                mock_response.json.return_value = cls.repos_payload
+            else:
+                mock_response.json.return_value = {}
+            return mock_response
 
-            cls.mock_get.side_effect = side_effect
+        cls.mock_get.side_effect = side_effect
 
-        @classmethod
-        def tearDownClass(cls):
-            """Stop patcher for requests.get."""
-            cls.get_patcher.stop()
+    @classmethod
+    def tearDownClass(cls):
+        """Stop patcher for requests.get."""
+        cls.get_patcher.stop()
