@@ -58,7 +58,8 @@ class TestGithubOrgClient(unittest.TestCase):
             return_value="http://fake-url.com",
         ) as mock_repos_url:
             client = GithubOrgClient("google")
-            self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
+            self.assertEqual(
+                client.public_repos(), ["repo1", "repo2", "repo3"])
 
             mock_repos_url.assert_called_once()
             mock_get_json.assert_called_once_with("http://fake-url.com")
