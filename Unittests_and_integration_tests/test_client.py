@@ -6,18 +6,7 @@ from parameterized import parameterized, parameterized_class
 from unittest.mock import patch, PropertyMock, Mock
 
 from client import GithubOrgClient
-from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
-
-
-# Re-define TEST_PAYLOAD here (checker-friendly: names appear in this file)
-TEST_PAYLOAD = [
-    {
-        "org_payload": org_payload,
-        "repos_payload": repos_payload,
-        "expected_repos": expected_repos,
-        "apache2_repos": apache2_repos,
-    }
-]
+from fixtures import TEST_PAYLOAD, org_payload, repos_payload, expected_repos, apache2_repos
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -65,7 +54,6 @@ class TestGithubOrgClient(unittest.TestCase):
         ) as mock_repos_url:
             client = GithubOrgClient("google")
             self.assertEqual(client.public_repos(), ["repo1", "repo2", "repo3"])
-
             mock_repos_url.assert_called_once()
             mock_get_json.assert_called_once_with("http://fake-url.com")
 
@@ -78,7 +66,15 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(GithubOrgClient.has_license(repo, license_key), expected)
 
 
-@parameterized_class(TEST_PAYLOAD)
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos,
+        "TEST_PAYLOAD": TEST_PAYLOAD,
+    }
+])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
