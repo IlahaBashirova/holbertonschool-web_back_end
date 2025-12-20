@@ -5,7 +5,7 @@ from parameterized import parameterized
 from unittest.mock import patch, PropertyMock, Mock
 from client import GithubOrgClient
 from parameterized import parameterized_class
-from fixtures import TEST_PAYLOAD
+from fixtures import org_payload, repos_payload, expected_repos, apache2_repos
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -77,7 +77,14 @@ class TestGithubOrgClient(unittest.TestCase):
             expected,
         )
 
-@parameterized_class(TEST_PAYLOAD)
+@parameterized_class([
+    {
+        "org_payload": org_payload,
+        "repos_payload": repos_payload,
+        "expected_repos": expected_repos,
+        "apache2_repos": apache2_repos,
+    }
+])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos."""
 
@@ -87,7 +94,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher = patch("requests.get")
         cls.mock_get = cls.get_patcher.start()
 
-        org_url = "https://api.github.com/orgs/google"
+        org_url = f"https://api.github.com/orgs/{cls.org_payload['login']}"
         repos_url = cls.org_payload["repos_url"]
 
         def side_effect(url, *args, **kwargs):
