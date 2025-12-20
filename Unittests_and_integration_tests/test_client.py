@@ -2,7 +2,7 @@
 """Client tests for client.py"""
 import unittest
 from parameterized import parameterized
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, Mock
 from client import GithubOrgClient
 from parameterized import parameterized_class
 from fixtures import TEST_PAYLOAD
