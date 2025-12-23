@@ -34,7 +34,7 @@ def get_locale() -> str:
     return request.accept_languages.best_match(app.config["LANGUAGES"])
 
 
-def get_user() -> Optional[Dict[str,Any]]:
+def get_user() -> Optional[Dict[str, Any]]:
     """Return a user dict"""
     login_as = request.args.get("login_as")
     if login_as is None:
@@ -47,6 +47,7 @@ def get_user() -> Optional[Dict[str,Any]]:
 
 
 babel.init_app(app, locale_selector=get_locale)
+
 
 @app.before_request
 def before_request() -> None:
