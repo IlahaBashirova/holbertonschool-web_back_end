@@ -16,7 +16,7 @@ class Config:
 app = Flask(__name__)
 app.config.from_object(Config)
 
-babel = Babel(app)
+babel = Babel()
 
 users = {
     1: {"name": "Balou", "locale": "fr", "timezone": "Europe/Paris"},
@@ -26,7 +26,6 @@ users = {
 }
 
 
-@babel.localeselector
 def get_locale() -> str:
     """Select the best language match"""
     locale = request.args.get("locale")
