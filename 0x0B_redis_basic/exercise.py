@@ -22,19 +22,14 @@ def count_calls(method: Callable = None) -> Callable:
 
 
 def call_history(method: Callable) -> Callable:
-    """ Decorator call history """
-
     @wraps(method)
     def wrapper(self, *args, **kwargs):
-        """ Wraper function """
-        input: str = str(args)
-        self._redis.rpush(method.__qualname__ + ":inputs", input)
+        self._redis.rpush(method.__qualname__ + ":inputs", str(args))
 
-        output = str(method(self, *args, **kwargs))
-        self._redis.rpush(method.__qualname__ + ":outputs", output)
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(method.__qualname__ + ":outputs", str(output))
 
         return output
-
     return wrapper
 
 
@@ -92,34 +87,14 @@ class Cache:
 
         return key
 
-    def get(self, key: str, fn: Callable = None)\
-            -> Union[str, bytes, int, float]:
-        """
-            Store the cache
-
-            Args:
-                data: bring the information to store
-
-            Return:
-                Key or number uuid
-        """
-        key = self._redit.get(key)
-
-        if fn:
-            return fn(key)
-
-        return key
+    def get(self, key: str, fn: Callable = None):
+        data = self._redis.get(key)
+        if data is None:
+            return None
+        return fn(data) if fn else data
 
     def get_str(self, key: str) -> str:
-        """ Parametrized get str """
-        return self._redit.get(key).decode("utf-8")
+        return self.get(key, fn=lambda d: d.decode("utf-8"))
 
     def get_int(self, key: str) -> int:
-        """ Parametrized get int """
-        value = self._redis.get(key)
-        try:
-            value = int(value.decode('utf-8'))
-        except Exception:
-            value = 0
-
-        return value
+        return self.get(key, fn=int)
