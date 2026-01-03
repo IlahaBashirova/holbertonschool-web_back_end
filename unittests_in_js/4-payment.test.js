@@ -11,8 +11,8 @@ describe('sendPaymentRequestToApi', function () {
 
     sendPaymentRequestToApi(100, 20);
 
-    expect(stub.calledOnceWithExactly('SUM', 100, 20)).to.equal(true);
-    expect(logSpy.calledOnceWithExactly('The total is: 10')).to.equal(true);
+    expect(stub.calledOnceWithExactly('SUM', 100, 20)).to.be.true;
+    expect(logSpy.calledOnceWithExactly('The total is: 10')).to.be.true;
 
     stub.restore();
     logSpy.restore();
